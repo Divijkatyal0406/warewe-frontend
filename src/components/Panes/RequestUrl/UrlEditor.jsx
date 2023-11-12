@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faClock } from '@fortawesome/fontawesome-free-solid'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock } from '@fortawesome/fontawesome-free-solid';
 
 const requestMethods = [
   {
@@ -34,9 +34,11 @@ export default function UrlEditor({
   reqMethod,
   setReqMethod,
   onInputSend,
+  setResponse,
 }) {
   const [historicalRequests, setHistoricalRequests] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [cachedResponses, setCachedResponses] = useState({});
 
   useEffect(() => {
     fetchHistoricalRequests();
@@ -44,16 +46,33 @@ export default function UrlEditor({
 
   const fetchHistoricalRequests = async () => {
     try {
-      const response = await axios.get('https://warewe-backend-sb64.onrender.com/api/hrs');
+      const response = await axios.get(
+        'https://warewe-backend-sb64.onrender.com/api/hrs'
+      );
       setHistoricalRequests(response.data);
     } catch (error) {
       console.error('Error fetching historical requests:', error);
     }
   };
 
-  const handleDropdownClick = (selectedRequest) => {
-    setUrl(BASE_URL+selectedRequest.originalUrl);
+  const handleDropdownClick = async (selectedRequest) => {
+    setUrl(BASE_URL + selectedRequest.originalUrl);
     setReqMethod(selectedRequest.method);
+
+    if (selectedRequest.method === 'GET') {
+      if (cachedResponses[selectedRequest.originalUrl]) {
+        setResponse(cachedResponses[selectedRequest.originalUrl]);
+      } else {
+        const response = await axios.get(
+          BASE_URL + selectedRequest.originalUrl
+        );
+        setResponse(response);
+        setCachedResponses((prevResponses) => ({
+          ...prevResponses,
+          [selectedRequest.originalUrl]: response,
+        }));
+      }
+    }
   };
 
   return (
@@ -69,7 +88,7 @@ export default function UrlEditor({
               {option.method}
             </option>
           ))}
-        </select>  
+        </select>
         <input
           className='ml-3 w-full px-4 py-2 border rounded-md border-gray-300 hover:border-orange-500 focus:outline-orange-500'
           value={url}
@@ -83,15 +102,15 @@ export default function UrlEditor({
           Send
         </button>
         <button
-            className='ml-3 px-6 py-2 rounded-md font-semibold text-white bg-orange-500 hover:bg-orange-600'
-            onClick={(e) => {
-              e.preventDefault();
-              if(showDropdown==false) fetchHistoricalRequests(); 
-              setShowDropdown(!showDropdown);
-            }}
-          >
-            <FontAwesomeIcon icon={faClock} />
-          </button>
+          className='ml-3 px-6 py-2 rounded-md font-semibold text-white bg-orange-500 hover:bg-orange-600'
+          onClick={(e) => {
+            e.preventDefault();
+            if (showDropdown == false) fetchHistoricalRequests();
+            setShowDropdown(!showDropdown);
+          }}
+        >
+          <FontAwesomeIcon icon={faClock} />
+        </button>
         {showDropdown && (
           <div className='absolute right-0 mt-10 bg-white border border-gray-300 rounded-md shadow-md'>
             <p className='py-2 px-3 bg-gray-200 font-semibold'>
@@ -104,7 +123,8 @@ export default function UrlEditor({
                   className='px-3 py-2 hover:bg-gray-100 cursor-pointer'
                   onClick={() => handleDropdownClick(request)}
                 >
-                  {request.method} {BASE_URL}{request.originalUrl}
+                  {request.method} {BASE_URL}
+                  {request.originalUrl}
                 </li>
               ))}
             </ul>

@@ -64,6 +64,7 @@ export default function Request({ setResponse, setLoading, loading }) {
         reqMethod={reqMethod}
         setReqMethod={setReqMethod}
         onInputSend={handleOnInputSend}
+        setResponse={setResponse}
       />
       <RequestTabGroup
         queryParams={queryParams}
