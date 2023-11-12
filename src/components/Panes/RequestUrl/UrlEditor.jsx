@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock } from '@fortawesome/fontawesome-free-solid';
+import Swal from 'sweetalert2'
 
 const requestMethods = [
   {
@@ -56,12 +57,14 @@ export default function UrlEditor({
   };
 
   const handleDropdownClick = async (selectedRequest) => {
+    setShowDropdown(false);
     setUrl(BASE_URL + selectedRequest.originalUrl);
     setReqMethod(selectedRequest.method);
 
     if (selectedRequest.method === 'GET') {
       if (cachedResponses[selectedRequest.originalUrl]) {
         setResponse(cachedResponses[selectedRequest.originalUrl]);
+        Swal.fire("Using Cached Response for Selected GET Request");
       } else {
         const response = await axios.get(
           BASE_URL + selectedRequest.originalUrl
