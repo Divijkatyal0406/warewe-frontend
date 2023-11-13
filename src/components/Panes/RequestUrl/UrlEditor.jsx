@@ -60,21 +60,20 @@ export default function UrlEditor({
     setShowDropdown(false);
     setUrl(BASE_URL + selectedRequest.originalUrl);
     setReqMethod(selectedRequest.method);
-
     if (selectedRequest.method === 'GET') {
       Swal.fire("Using Cached Response for Selected GET Request");
-      if (cachedResponses[selectedRequest.originalUrl]) {
-        setResponse(cachedResponses[selectedRequest.originalUrl]);
-      } else {
+      // if (cachedResponses[selectedRequest.originalUrl]) {
+      //   setResponse(cachedResponses[selectedRequest.originalUrl]);
+      // } else {
         const response = await axios.get(
           BASE_URL + selectedRequest.originalUrl
         );
         setResponse(response);
-        setCachedResponses((prevResponses) => ({
-          ...prevResponses,
-          [selectedRequest.originalUrl]: response,
-        }));
-      }
+        // setCachedResponses((prevResponses) => ({
+          // ...prevResponses,
+          // [selectedRequest.originalUrl]: response,
+        // }));
+      // }
     }
   };
 
