@@ -18,10 +18,6 @@ const requestMethods = [
     method: 'PUT',
   },
   {
-    slug: 'patch',
-    method: 'PATCH',
-  },
-  {
     slug: 'delete',
     method: 'DELETE',
   },
