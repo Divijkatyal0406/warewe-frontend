@@ -62,9 +62,9 @@ export default function UrlEditor({
     setReqMethod(selectedRequest.method);
 
     if (selectedRequest.method === 'GET') {
+      Swal.fire("Using Cached Response for Selected GET Request");
       if (cachedResponses[selectedRequest.originalUrl]) {
         setResponse(cachedResponses[selectedRequest.originalUrl]);
-        Swal.fire("Using Cached Response for Selected GET Request");
       } else {
         const response = await axios.get(
           BASE_URL + selectedRequest.originalUrl
@@ -100,7 +100,9 @@ export default function UrlEditor({
         <button
           className='ml-3 px-6 py-2 rounded-md font-semibold text-white bg-orange-500 hover:bg-orange-600'
           type='button'
-          onClick={(e) => onInputSend(e)}
+          onClick={async (e) => {
+            onInputSend(e);
+          }}
         >
           Send
         </button>
